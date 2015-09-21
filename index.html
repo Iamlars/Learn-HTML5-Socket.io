@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0 0 50px 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li.me { text-align: right;}
+      #messages li:nth-child(odd) { background: #eee; }
+
+      #login{
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top:0;
+        left: 0;
+        background: #333;
+        color: #fff;
+        text-align: center;
+      }
+      #login input{
+        margin-top: 50px;
+        width: 300px;
+        height: 40px;
+      }
+      #login span{
+          border: 1px solid #ccc;
+          display: inline-block;
+          margin: 30px 0;
+          padding: 10px 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="login">
+        <input placeholder="your name" id="myname" /> <br>
+        <span>login</span>
+    </div>  
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+
+       $('#login span').click(function(){
+            $('#login').hide();
+            var socket = io();
+            var msgBox = {};
+
+            socket.emit('online', {user: myname.value});
+
+            msgBox.name = myname.value;  
+
+            socket.on('online',function(data){
+                if(data.user === msgBox.name){
+                  $('#messages').append($('<li class="me">').text('用户 '+data.user+'进入了聊天室'));
+                }else{
+                  $('#messages').append($('<li>').text('user '+data.user+' into box'));
+                }
+                 
+            });
+
+            $('form').submit(function(){
+              msgBox.value = $('#m').val();
+              socket.emit('chat message', JSON.stringify(msgBox));
+              $('#m').val('');
+              return false;
+            });
+
+            socket.on('chat message', function(msg){
+              var msgJSON = JSON.parse(msg);
+              if(msgJSON.name == msgBox.name){
+                $('#messages').append($('<li class="me">').text(msgJSON.value+'：我'));
+              }else{
+                 $('#messages').append($('<li>').text(msgJSON.name+'：'+msgJSON.value));
+              }
+              $('body').scrollTop(10000000000);
+            });
+
+
+       }); 
+
+
+
+
+
+    </script>
+  </body>
+</html>
