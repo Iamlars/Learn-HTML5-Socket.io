@@ -53,6 +53,7 @@
             $('#login').hide();
             var socket = io();
             var msgBox = {};
+            var endSend = 0;
 
             socket.emit('online', {user: myname.value});
 
@@ -62,15 +63,22 @@
                 if(data.user === msgBox.name){
                   $('#messages').append($('<li class="me">').text('用户 '+data.user+'进入了聊天室'));
                 }else{
-                  $('#messages').append($('<li>').text('user '+data.user+' into box'));
+                  $('#messages').append($('<li>').text('用户 '+data.user+'进入了聊天室'));
                 }
                  
             });
+            socket.on('offline',function(data){
+                $('#messages').append($('<li class="me">').text('用户 '+data.user+'退出了聊天室'));
+            });
 
             $('form').submit(function(){
+              if(+new Date - endSend < 1000){
+                  alert('不要刷频哈！');
+              }
               msgBox.value = $('#m').val();
               socket.emit('chat message', JSON.stringify(msgBox));
               $('#m').val('');
+              endSend = +new Date;
               return false;
             });
 
@@ -86,9 +94,6 @@
 
 
        }); 
-
-
-
 
 
     </script>
