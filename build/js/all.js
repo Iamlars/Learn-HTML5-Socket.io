@@ -1,1 +1,1 @@
-alert(1),alert(2),alert(3);
+var name="I am function A";controller("main",["$scope","user",function(n,a){n.name=a.name}]);var name2="I am function B";controller("main",function(n,a){n.name=a.name});

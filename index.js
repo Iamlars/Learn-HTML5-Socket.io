@@ -1,9 +1,13 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 var users = {};
 var ips = new Map();
+
+app.use(express.static("build"));
+
 
 app.get('/', function(req, res){
 	var ipTimes = ips.has(getClientIp(req));
@@ -19,6 +23,7 @@ app.get('/', function(req, res){
 		return;	
 	}
   res.sendFile(__dirname + '/index.html');
+
 });
 
 
